@@ -1,0 +1,14 @@
+{
+  "name": "weatherapi",
+  "version": "1.0.0",
+  "description": "API that allows a user to fetch weather details for a given city",
+  "main": "server.js",
+  "scripts": {
+    "test": "test"
+  },
+  "author": "Daniel Grew",
+  "license": "ISC",
+  "dependencies": {
+    "express": "^4.17.1"
+  }
+}
