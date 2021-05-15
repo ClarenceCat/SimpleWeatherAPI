@@ -4,11 +4,16 @@
   "description": "API that allows a user to fetch weather details for a given city",
   "main": "server.js",
   "scripts": {
-    "test": "test"
+    "test": "test",
+    "start": "node src/server.js",
+    "dev" : "nodemon src/server.js"
   },
   "author": "Daniel Grew",
   "license": "ISC",
   "dependencies": {
     "express": "^4.17.1"
+  },
+  "devDependencies": {
+    "nodemon": "^2.0.7"
   }
 }
