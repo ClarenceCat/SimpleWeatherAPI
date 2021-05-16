@@ -9,7 +9,7 @@ const logger = require('./logger');
 // description: logs info about the request 
 const logMiddleware = (req, res, next) => {
     // log info about requester 
-    logger.info(`host: ${req.hostname} method: ${req.method} url: ${req.path} from ip: ${req.ip}`);
+    logger.info(`host: ${req.hostname}, method: ${req.method}, url: ${req.path}, from ip: ${req.ip}`);
 
     next();
 }

@@ -5,8 +5,9 @@
 
 // required modules
 const express = require('express');
+const mongoose = require('mongoose');
 
-// get logger from logger
+// get logger and loggerMiddleware
 const logger = require('./Middleware/logger');
 const logMiddleware = require('./Middleware/logMiddleware');
 
@@ -14,8 +15,22 @@ const app = express();
 
 app.use(express.json());
 
-// add logMiddleware as a middleware to the app
+// add logMiddleware as a middleware to the app - logs info about incoming messages
 app.use(logMiddleware);
+
+// Connect to db 
+const mongoUri = process.env.DB_URI;
+mongoose.connect(mongoUri, {
+    useNewUrlParser: true,
+    useCreateIndex: true,
+    useUnifiedTopology: true 
+});
+mongoose.connection.on('connected', () => {
+    console.log('Connected to mongo instance');
+});
+mongoose.connection.on('error', (err) => {
+    console.error('Error connecting to mongo'. err);
+})
 
 app.get('/', (req, res) => {
     res.send('recieved');
