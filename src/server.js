@@ -6,14 +6,19 @@
 // required modules
 const express = require('express');
 
+// get logger from logger
+const logger = require('./Middleware/logger');
+const logMiddleware = require('./Middleware/logMiddleware');
+
 const app = express();
 
 app.use(express.json());
 
+// add logMiddleware as a middleware to the app
+app.use(logMiddleware);
 
-// create middleware to log all requests
-app.use((req, res) => {
-    // log the route requested by what IP address with the date and time stamp
+app.get('/', (req, res) => {
+    res.send('recieved');
 })
 
 const port = process.env.PORT || 5000;
@@ -22,4 +27,5 @@ const port = process.env.PORT || 5000;
 // export so that the server can be tested
 module.exports = app.listen(port, () => {
     console.log(`Server started on port ${port}`);
+    logger.info(`Server started on port ${port}`)
 })
