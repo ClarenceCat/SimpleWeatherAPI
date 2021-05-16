@@ -4,12 +4,19 @@
 // Date Last Modified: 2021-05-14
 
 // required modules
+// require and configure dotenv
+require('dotenv').config();
+
 const express = require('express');
-const mongoose = require('mongoose');
 
 // get logger and loggerMiddleware
 const logger = require('./Middleware/logger');
 const logMiddleware = require('./Middleware/logMiddleware');
+
+const mongoose = require('mongoose');
+
+// require models to use in the App
+require('./Models/WeatherLog');
 
 const app = express();
 
@@ -25,11 +32,19 @@ mongoose.connect(mongoUri, {
     useCreateIndex: true,
     useUnifiedTopology: true 
 });
+
+// on Connected handler for mongoose
+// This triggers when the api connects to the mongo database host
 mongoose.connection.on('connected', () => {
+    logger.info('Connected to mongo instance');
     console.log('Connected to mongo instance');
 });
+
+// on Error handler for mongoose
+// This event triggers in the event of an error with the database 
 mongoose.connection.on('error', (err) => {
-    console.error('Error connecting to mongo'. err);
+    logger.error(`Error connecting to mongo ${err}`);
+    console.log('Error connecting to mongo'. err);
 })
 
 app.get('/', (req, res) => {
