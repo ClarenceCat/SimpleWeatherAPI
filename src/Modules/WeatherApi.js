@@ -8,6 +8,8 @@ const https = require('https');
 const axios = require('axios');
 const logger = require('../Middleware/logger');
 
+const { STATUS_NOT_FOUND } = require('../config/constants')
+
 // function: getWeather
 // description: This function calls the OpenWeather API to retrieve the current weather information for a given city
 // parameters:
@@ -47,15 +49,16 @@ const getWeather = async (cityName) => {
     {
         // an error will be thrown if there is an axios error, or if the api responds with a status code outside of the 200-299 range
         // if this was a status code that is outside of the above specified range (2xx) - then this will be triggered
-        if(error.response){
-            logger.info(`Open Weather API responded with a status code of ${api_data.status} - ${ error.response.data }`);
+        if(error.response && error.response.status === STATUS_NOT_FOUND){
+            logger.info(`Open Weather API responded with a status code of ${error.response.status} - ${ error.response.data }`);
             
             // return null
             return null;
         }
         else{
             // if this code is called, then it is an issue with axios 
-            logger.error(`Error making request to the Open Weather Api from this application`);
+            logger.error(`Error making request to the Open Weather Api from this application - status: ${error.response.status} - message: ${error.response.data}`);
+            throw new Error(`Error making request to the Open Weather Api from this application - status: ${error.response.status} - message: ${error.response.data}`);
         }
 
     }

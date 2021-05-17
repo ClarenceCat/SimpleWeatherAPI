@@ -18,12 +18,17 @@ const mongoose = require('mongoose');
 // require models to use in the App
 require('./Models/WeatherLog');
 
+const weatherRoutes = require('./routes/weatherRoutes');
+
 const app = express();
 
 app.use(express.json());
 
 // add logMiddleware as a middleware to the app - logs info about incoming messages
 app.use(logMiddleware);
+
+// use routes in api
+app.use('/api/weather', weatherRoutes);
 
 // Connect to db 
 const mongoUri = process.env.DB_URI;
