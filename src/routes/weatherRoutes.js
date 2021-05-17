@@ -39,15 +39,15 @@ router.post('/', async (req, res) => {
         if(foundDBWeather){
             // respond with the weather info for the city
             const weather_info = {city: city, weather: foundDBWeather}
-            res.status(STATUS_SUCCESS).send(weather_info);
             logger.info(`Responded to ${req.ip} with a status of 200. Containing the info ${weather_info}`);
+            return res.status(STATUS_SUCCESS).send(weather_info);
         }
 
         // if the city is not in the database call api to retrieve the weather for the city
         const retrieveWeather = await getWeather(city);
 
         // check if the info was successfully retrieved
-        if(!retrieve_weather){
+        if(!retrieveWeather){
             return res.status(STATUS_CLIENT_ERROR).send({error: "Could not find city"})
         }
 
@@ -61,6 +61,7 @@ router.post('/', async (req, res) => {
     {
         // log the error
         logger.error(error);
+        console.log(error);
 
         // respond to the user
         return res.status(STATUS_SERVER_ERROR).send({error: "There was an error retrieving weather data"});

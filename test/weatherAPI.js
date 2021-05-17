@@ -19,6 +19,8 @@ const { getWeather } = require('../src/Modules/WeatherApi');
 const { checkWeatherLogs, insertNewLog } = require('../src/Modules/WeatherInfo');
 const { expect } = require('chai');
 
+const { STATUS_SUCCESS } = require('../src/config/constants');
+
 // configure chai
 // we are using should declarations 
 chai.should();
@@ -200,7 +202,126 @@ describe("WeatherInfo functions", async () => {
 
 // testing the API route for retrieving weather data
 describe('Weather API calls', () => {
-    
+
+    // this will run before each test 
+    beforeEach((async () => {
+        // set up test data to use in testing the functions
+        const passing_info_1 = new WeatherLog({ city: 'toronto', timestamp: new Date(), weather: {temp: 21, feels_like: 22, temp_min: 18, temp_max: 25, pressure: 200, humidity: 100} });
+        const failing_info_1 = new WeatherLog({ city: 'london', timestamp: ((new Date()) - 40000), weather: {temp: 21, feels_like: 22, temp_min: 18, temp_max: 25, pressure: 200, humidity: 100} })
+
+        try{
+            // save the test data
+            await passing_info_1.save();
+            await failing_info_1.save();
+        }
+        catch(e)
+        {
+            console.log(e);
+            return;
+        }
+    }));
+
+    // this is run after each test
+    afterEach((async () => {
+        // remove the database info
+        try{
+            await WeatherLog.findOneAndDelete({city: 'toronto'});
+            await WeatherLog.findOneAndDelete({city: 'london'});
+            await WeatherLog.findOneAndDelete({city: 'amsterdam'});
+        }
+        catch(error)
+        {
+            console.log(error);
+            return;
+        }
+    }))
+
+    // TEST 1
+    // Route: GET /api/weather/
+    // Description: Runs the function with a city that is not in the database
+    // Expected Return: null
+    describe('TEST 1 - POST /api/weather/', () => {
+        // set up data to test
+        const city_info = {city: 'toronto'}
+
+        it('Should retrieve the weather info for toronto using the api', (done) => {
+            // call function passing in the string 'toronto
+            chai.request(server).post('/api/weather').send(city_info).end((err, response) => {
+                // check the response status 
+                response.should.have.status(STATUS_SUCCESS);
+                response.body.should.have.property('city').eq('toronto');
+                response.body.should.have.property('weather');
+
+                if(response.body.weather){
+                    response.body.weather.should.have.property('temp');
+                    response.body.weather.should.have.property('feels_like');
+                    response.body.weather.should.have.property('temp_min');
+                    response.body.weather.should.have.property('temp_max');
+                    response.body.weather.should.have.property('pressure');
+                    response.body.weather.should.have.property('humidity');
+                }
+                done();
+            })
+        })
+    });
+
+        // TEST 1
+    // Route: GET /api/weather/
+    // Description: Runs the function with a city that is not in the database
+    // Expected Return: null
+    describe('TEST 2 - POST /api/weather/', () => {
+        // set up data to test
+        const city_info = {city: 'london'}
+
+        it('Should retrieve the weather info for london using the api', (done) => {
+            // call function passing in the string 'toronto
+            chai.request(server).post('/api/weather').send(city_info).end((err, response) => {
+                // check the response status 
+                response.should.have.status(STATUS_SUCCESS);
+                response.body.should.have.property('city').eq('london');
+                response.body.should.have.property('weather');
+
+                if(response.body.weather){
+                    response.body.weather.should.have.property('temp');
+                    response.body.weather.should.have.property('feels_like');
+                    response.body.weather.should.have.property('temp_min');
+                    response.body.weather.should.have.property('temp_max');
+                    response.body.weather.should.have.property('pressure');
+                    response.body.weather.should.have.property('humidity');
+                }
+                done();
+            })
+        })
+    });
+
+        // TEST 1
+    // Route: GET /api/weather/
+    // Description: Runs the function with a city that is not in the database
+    // Expected Return: null
+    describe('TEST 3 - POST /api/weather/', () => {
+        // set up data to test
+        const city_info = {city: 'amsterdam'}
+
+        it('Should retrieve the weather info for amsterdam using the api', (done) => {
+            // call function passing in the string 'toronto
+            chai.request(server).post('/api/weather').send(city_info).end((err, response) => {
+                // check the response status 
+                response.should.have.status(STATUS_SUCCESS);
+                response.body.should.have.property('city').eq('amsterdam');
+                response.body.should.have.property('weather');
+
+                if(response.body.weather){
+                    response.body.weather.should.have.property('temp');
+                    response.body.weather.should.have.property('feels_like');
+                    response.body.weather.should.have.property('temp_min');
+                    response.body.weather.should.have.property('temp_max');
+                    response.body.weather.should.have.property('pressure');
+                    response.body.weather.should.have.property('humidity');
+                }
+                done();
+            })
+        })
+    });
 })
 
 

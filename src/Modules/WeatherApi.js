@@ -23,7 +23,6 @@ const getWeather = (cityName) => {
     return new Promise (async (resolve, reject) => {
         // create the api call string
         const api_call_str = `http://api.openweathermap.org/data/2.5/weather?q=${cityName}&appid=${process.env.WEATHER_API_KEY}`;
-        console.log(api_call_str);
         // note - OpenWeather API returns status code 404 with message "city not found" when the city does not exist or cannot be found (error checking)
         // enter try catch block
         try{
