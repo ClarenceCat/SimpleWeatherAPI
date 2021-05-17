@@ -32,24 +32,25 @@ describe("WeatherApi functions", () => {
     // Function: getWeather
     // Description: This test will test the happy route for the getWeather Function
     // Expected Return: weather info
-    describe('TEST 1 - Happy path test for getWeather()', async () => {
+    describe('TEST 1 - Happy path test for getWeather()', () => {
 
         const test_city = 'toronto';
 
         it('Should call the Open Weather API to retrieve the current weather for Toronto', (done) => {
-            // call function passing in the string 'toronto
-            const res = await getWeather(test_city);
+            // call function passing in the string toronto
+            getWeather(test_city).then(res => {
+                // should be an object
+                expect(res).to.be.an('object');
+                expect(res).to.have.property('temp');
+                expect(res).to.have.property('feels_like');
+                expect(res).to.have.property('temp_min');
+                expect(res).to.have.property('temp_max');
+                expect(res).to.have.property('pressure');
+                expect(res).to.have.property('humidity');
+    
+                done();
 
-            // should be an object
-            expect(res).to.be.an('object');
-            expect(res).to.have.property('temp');
-            expect(res).to.have.property('feels_like');
-            expect(res).to.have.property('temp_min');
-            expect(res).to.have.property('temp_max');
-            expect(res).to.have.property('pressure');
-            expect(res).to.have.property('humidity');
-
-            done();
+            }).catch(done)
         })
     });
 
@@ -63,19 +64,19 @@ describe("WeatherApi functions", () => {
 
         it('Should call the Open Weather API to retrieve the current weather for Toronto', (done) => {
             // call function passing in the string 'toronto
-            const res = await getWeather(test_city);
-
-            // should be an object
-            expect(res).to.equal(null);
-
-            done();
+            getWeather(fake_city).then(res => {
+                // should be an object
+                expect(res).to.equal(null);
+    
+                done();
+            }).catch(done)
         });
     });
 });
 
 
 // testing functions in the WeatherInfo module
-describe("WeatherInfo functions", () => {
+describe("WeatherInfo functions", async () => {
 
     let pass_1 = null;
     let fail_1 = null;
@@ -91,8 +92,6 @@ describe("WeatherInfo functions", () => {
             // save the test data
             pass_1 = await passing_info_1.save();
             fail_1 = await failing_info_1.save();
-
-            test_database_logs = [pass_1, pass_2];
         }
         catch(e)
         {
@@ -107,6 +106,7 @@ describe("WeatherInfo functions", () => {
         try{
             await WeatherLog.findByIdAndDelete(pass_1._id);
             await WeatherLog.findByIdAndDelete(fail_1._id);
+            await WeatherLog.findOneAndDelete({city: 'amsterdam'});
         }
         catch(error)
         {
@@ -119,24 +119,25 @@ describe("WeatherInfo functions", () => {
     // Function: checkWeatherLogs
     // Description: Tests the checkWeatherLogs function for a city that has been stored less than 20 seconds ago
     // Expected Return: weather info
-    describe('TEST 1 - Happy path test for checkWeatherLogs() - with weather that has been stored <20 seconds ago', async () => {
+    describe('TEST 1 - Happy path test for checkWeatherLogs() - with weather that has been stored <20 seconds ago', () => {
 
         const test_city = 'toronto';
 
         it('Should call the Open Weather API to retrieve the current weather for Toronto', (done) => {
             // call function passing in the string 'toronto
-            const res = await getWeather(test_city);
+            checkWeatherLogs(test_city).then(res => {
+                // should be an object
+                expect(res).to.be.an('object');
+                expect(res).to.have.property('temp');
+                expect(res).to.have.property('feels_like');
+                expect(res).to.have.property('temp_min');
+                expect(res).to.have.property('temp_max');
+                expect(res).to.have.property('pressure');
+                expect(res).to.have.property('humidity');
+    
+                done();
+            })
 
-            // should be an object
-            expect(res).to.be.an('object');
-            expect(res).to.have.property('temp');
-            expect(res).to.have.property('feels_like');
-            expect(res).to.have.property('temp_min');
-            expect(res).to.have.property('temp_max');
-            expect(res).to.have.property('pressure');
-            expect(res).to.have.property('humidity');
-
-            done();
         })
     });
 
@@ -144,18 +145,19 @@ describe("WeatherInfo functions", () => {
     // Function: checkWeatherLogs
     // Description: Tests the checkWeatherLogs function for a city that has been stored more than 20 seconds ago
     // Expected Return: null
-    describe('TEST 2 - Happy path test for checkWeatherLogs() - with weather that has been stored >20 seconds ago', async () => {
+    describe('TEST 2 - Happy path test for checkWeatherLogs() - with weather that has been stored >20 seconds ago',  () => {
 
         const test_city = 'london';
 
         it('Should call the Open Weather API to retrieve the current weather for Toronto', (done) => {
             // call function passing in the string 'toronto
-            const res = await getWeather(test_city);
+            checkWeatherLogs(test_city).then(res => {
+                // should return null
+                expect(res).to.equal(null);
+    
+                done();
 
-            // should return null
-            expect(res).to.equal(null);
-
-            done();
+            })
         })
     });
 
@@ -163,18 +165,18 @@ describe("WeatherInfo functions", () => {
     // Function: checkWeatherLogs
     // Description: Runs the function with a city that is not in the database
     // Expected Return: null
-    describe('TEST 3 - Happy path test for checkWeatherLogs() - with weather from a city that is not stored in database', async () => {
+    describe('TEST 3 - Happy path test for checkWeatherLogs() - with weather from a city that is not stored in database',  () => {
 
         const test_city = failing_info_2_city;
 
         it('Should call the Open Weather API to retrieve the current weather for Toronto', (done) => {
-            // call function passing in the string 'toronto
-            const res = await getWeather(test_city);
+                // call function passing in the string 'toronto
+                checkWeatherLogs(test_city).then(res => {
+                // should return null
+                expect(res).to.equal(null);
 
-            // should return null
-            expect(res).to.equal(null);
-
-            done();
+                done();
+            })
         })
     });
 
@@ -185,12 +187,13 @@ describe("WeatherInfo functions", () => {
 
         it('Should insert a new record and return a weather object with the weather of the city inserted into the database', (done) => {
             // call function passing in the string 'toronto
-            const res = await insertNewLog(insert_city, weather);
+            insertNewLog(insert_city, weather).then(res => {                
+                // should return the weather that has been passed into the function
+                expect(res).to.equal(weather);
 
-            // should return the weather that has been passed into the function
-            expect(res).to.equal(weather);
+                done();
 
-            done();
+            }).catch(done)
         })
     });
 });
