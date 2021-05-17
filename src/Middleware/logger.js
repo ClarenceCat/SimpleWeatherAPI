@@ -4,10 +4,14 @@
 // Date Last Modified: 2021-05-14
 
 const winston = require('winston');
+const {transports, createLogger, format} = require('winston');
 
 const logger = winston.createLogger({
     level: 'info',
-    format: winston.format.json(),
+    format: format.combine(
+        format.timestamp(),
+        format.json()
+    ),
     transports: [
         new winston.transports.File({ filename: `./logs/${new Date().toISOString().slice(0,10)}.log` }),
     ],
