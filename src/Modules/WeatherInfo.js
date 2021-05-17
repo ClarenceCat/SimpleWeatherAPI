@@ -38,5 +38,50 @@ const checkWeatherLogs = async (cityName) => {
     if(time_dif > WEATHER_REFRESH_TIME){
         // delete the record from the database
         logger.info(`Removing the city ${cityName} from database`);
+        try{
+            await WeatherLog.findByIdAndDelete(found._id);
+            logger.info(`Successfully removed city with the name ${found.city} from the WeatherLog Database`);
+
+            return null;
+        }
+        catch(e){
+            // if there is an error - log the error and throw an error
+            logger.error(`There was an error removing the city with the name ${found.city} from the WeatherLog Database`)
+            throw new Error("Failed to remove the city from the database");
+        }
     }
+        // if this point is reached, then the info does not need to be updated and we can return the info in the database to the user
+        return found.weather;
+}
+
+
+// function: insertNewLog
+// description: Inserts new weather data for a city into the database
+// params: cityName : String, weatherInfo : Object : { "temp" : float, "feels_like" : float, "temp_min" : float, "temp_max" : float, "pressure" : Number, "humidity" : Number }
+// returns: the weather info if it is successful or a null if it is not successfull 
+const insertNewLog = async (cityName, weatherInfo) => {
+    
+    try{
+        // create a new model object to save to the database
+        const newLog = new WeatherLog({ city: cityName, weather: weatherInfo });
+
+        logger.info(`Saving weather info for the city ${cityName} : weather info is ${weatherInfo}`);
+
+        // save the weather info to the database
+        const createdLog = await newLog.save();
+
+        // log the fact that the log was successfully created
+        logger.info(`Successfully inserted weather info for the city ${cityName}`);
+        return createdLog.weather;
+    }
+    catch(e){
+        logger.error(`Failed to insert weather information for the city ${cityName} in the database`);
+        return null;
+    }
+}
+
+// export the functions
+module.exports = {
+    checkWeatherLogs,
+    insertNewLog
 }

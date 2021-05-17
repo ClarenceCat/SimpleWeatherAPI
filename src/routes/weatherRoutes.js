@@ -8,6 +8,10 @@ const router = express.Router();
 
 const logger = require('../Middleware/logger');
 
+// require the functions used in the routes 
+const { getWeather } = require('../Modules/WeatherApi');
+const { checkWeatherLogs, insertNewLog } = require('../Modules/WeatherInfo');
+
 // @POST /api/weather
 // @req - city : String
 // @res - { weather details }
@@ -30,7 +34,7 @@ router.post('/', (req, res) => {
     // if the city is not in the database call api to retrieve the weather for the city
 
     // AND insert the new info into the database
-    
+
 })
 
 module.exports = router;
